@@ -1,0 +1,7 @@
+{
+  "name": "Jharkhand Tourist Assistant",
+  "description": "A multilingual AI travel assistant for exploring Jharkhand, India. Plan itineraries, find local gems, and get safety tips.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
