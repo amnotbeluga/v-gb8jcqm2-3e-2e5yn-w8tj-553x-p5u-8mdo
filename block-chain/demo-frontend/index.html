@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tourism Blockchain Demo</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      padding: 20px;
+      text-align: center;
+      background: #020617;
+      border-bottom: 1px solid #1f2937;
+    }
+    h1 { margin: 0; font-size: 1.6rem; }
+    .subtitle { margin-top: 6px; font-size: 0.9rem; color: #9ca3af; }
+    main { max-width: 1000px; margin: 20px auto; padding: 0 16px; }
+    .row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; }
+    .card {
+      background: #020617;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #1f2937;
+      flex: 1 1 300px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    .card h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    label { display: block; font-size: 0.85rem; margin-bottom: 4px; color: #9ca3af; }
+    input {
+      width: 100%; padding: 6px 8px; border-radius: 6px;
+      border: 1px solid #475569; background: #0f172a; color: #e2e8f0;
+      margin-bottom: 8px;
+    }
+    button {
+      background: #0ea5e9; border: none; padding: 6px 12px;
+      border-radius: 999px; font-weight: 600; cursor: pointer;
+    }
+    button:hover { background: #38bdf8; }
+    .output {
+      margin-top: 8px; padding: 8px; border-radius: 8px;
+      background: #020617; border: 1px dashed #334155;
+      font-family: "JetBrains Mono", monospace; font-size: 0.8rem;
+      white-space: pre-wrap; max-height: 250px; overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Tourism Blockchain Demo</h1>
+    <div class="subtitle">Backend-signed blockchain actions · No MetaMask</div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>API Settings</h2>
+      <label>API Base URL</label>
+      <input id="apiBase" value="http://localhost:4000" />
+
+      <label>Admin API Key (same as in .env)</label>
+      <input id="apiKey" placeholder="supersecret123" />
+
+      <button id="btnPing">Ping</button>
+      <div class="output" id="outPing"></div>
+    </section>
+
+    <div class="row">
+      <section class="card">
+        <h2>Contract Owner</h2>
+        <button id="btnOwner">Get Owner</button>
+        <div class="output" id="outOwner"></div>
+      </section>
+
+      <section class="card">
+        <h2>Verify/Unverify Guide (Admin)</h2>
+        <label>Guide ID</label>
+        <input id="guideId" type="number" value="1" />
+
+        <label>Verified?</label>
+        <input id="verified" type="checkbox" checked />
+
+        <label>Metadata URI</label>
+        <input id="guideMeta" value="https://example.com/guide/1" />
+
+        <button id="btnVerify">Submit Verification</button>
+        <div class="output" id="outVerify"></div>
+      </section>
+    </div>
+
+    <div class="row">
+      <section class="card">
+        <h2>Check Guide Status (Public)</h2>
+        <label>Guide ID</label>
+        <input id="guideCheckId" type="number" value="1" />
+        <button id="btnCheckGuide">Check Guide</button>
+        <div class="output" id="outCheckGuide"></div>
+      </section>
+
+      <section class="card">
+        <h2>Create Booking (Admin)</h2>
+        <label>Order ID</label>
+        <input id="orderId" value="ORD-1001" />
+
+        <label>User ID</label>
+        <input id="userId" value="10" />
+
+        <label>Guide ID</label>
+        <input id="orderGuideId" value="1" />
+
+        <label>Amount</label>
+        <input id="amount" value="15000" />
+
+        <label>Currency</label>
+        <input id="currency" value="INR" />
+
+        <label>Payment Ref</label>
+        <input id="paymentRef" value="razorpay_ref_123" />
+
+        <button id="btnCreateOrder">Create Booking</button>
+        <div class="output" id="outCreateOrder"></div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Fetch Booking (Public)</h2>
+      <label>Order ID</label>
+      <input id="orderFetchId" value="ORD-1001" />
+      <button id="btnFetchOrder">Fetch Order</button>
+      <div class="output" id="outFetchOrder"></div>
+    </section>
+  </main>
+
+  <script>
+    function base() {
+      return document.getElementById("apiBase").value.trim().replace(/\/+$/, "");
+    }
+
+    function adminHeaders() {
+      return {
+        "Content-Type": "application/json",
+        "x-api-key": document.getElementById("apiKey").value.trim(),
+      };
+    }
+
+    function show(el, data) {
+      el.textContent = JSON.stringify(data, null, 2);
+    }
+
+    const outPing = document.getElementById("outPing");
+    const outOwner = document.getElementById("outOwner");
+    const outVerify = document.getElementById("outVerify");
+    const outCheckGuide = document.getElementById("outCheckGuide");
+    const outCreateOrder = document.getElementById("outCreateOrder");
+    const outFetchOrder = document.getElementById("outFetchOrder");
+
+    document.getElementById("btnPing").onclick = async () => {
+      const res = await fetch(base() + "/");
+      show(outPing, await res.json());
+    };
+
+    document.getElementById("btnOwner").onclick = async () => {
+      const res = await fetch(base() + "/owner");
+      show(outOwner, await res.json());
+    };
+
+    document.getElementById("btnVerify").onclick = async () => {
+      const body = {
+        guideId: Number(document.getElementById("guideId").value),
+        isVerified: document.getElementById("verified").checked,
+        metadataURI: document.getElementById("guideMeta").value,
+      };
+
+      const res = await fetch(base() + "/admin/guides/verify", {
+        method: "POST",
+        headers: adminHeaders(),
+        body: JSON.stringify(body),
+      });
+
+      show(outVerify, await res.json());
+    };
+
+    document.getElementById("btnCheckGuide").onclick = async () => {
+      const id = document.getElementById("guideCheckId").value;
+      const res = await fetch(base() + "/guides/" + id);
+      show(outCheckGuide, await res.json());
+    };
+
+    document.getElementById("btnCreateOrder").onclick = async () => {
+      const body = {
+        orderId: document.getElementById("orderId").value,
+        userId: Number(document.getElementById("userId").value),
+        guideId: Number(document.getElementById("orderGuideId").value),
+        amount: Number(document.getElementById("amount").value),
+        currency: document.getElementById("currency").value,
+        paymentRef: document.getElementById("paymentRef").value,
+      };
+
+      const res = await fetch(base() + "/orders", {
+        method: "POST",
+        headers: adminHeaders(),
+        body: JSON.stringify(body),
+      });
+
+      show(outCreateOrder, await res.json());
+    };
+
+    document.getElementById("btnFetchOrder").onclick = async () => {
+      const id = document.getElementById("orderFetchId").value;
+      const res = await fetch(base() + "/orders/" + id);
+      show(outFetchOrder, await res.json());
+    };
+  </script>
+</body>
+</html>

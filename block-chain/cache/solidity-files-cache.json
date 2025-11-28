@@ -1,0 +1,41 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/home/ricky/VScode/projects/hackathon/Team_Ananta/block-chain/contracts/TourismGuide.sol": {
+      "lastModificationDate": 1764229790998,
+      "contentHash": "b3075d4782b2c3e397d32101fde4d904",
+      "sourceName": "contracts/TourismGuide.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "TourismGuide"
+      ]
+    }
+  }
+}

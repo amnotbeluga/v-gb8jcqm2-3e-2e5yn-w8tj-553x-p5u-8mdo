@@ -1,0 +1,5 @@
+{
+  "name": "YatraMitra AI Feedback Analyzer",
+  "description": "AI-driven feedback and sentiment analysis dashboard for the YatraMitra Jharkhand Tourism Platform. Features real-time AI analysis using Google Gemini.",
+  "requestFramePermissions": []
+}
